@@ -1,0 +1,73 @@
+{
+  "skill": "wake-up-repo",
+  "version": "1.0.0",
+  "evals": [
+    {
+      "id": "trigger-positive-and-negative",
+      "category": "routing",
+      "cases": [
+        {
+          "prompt": "Wake up /Users/samdeesh/Projects/workbench and make it agent-ready.",
+          "should_trigger": true
+        },
+        {
+          "prompt": "Scaffold AGENTS.md, CONTRIBUTING.md, and CODEOWNERS for our Payments repo using these architecture notes.",
+          "should_trigger": true
+        },
+        {
+          "prompt": "Fix the null pointer bug in src/auth/session.ts and add a unit test.",
+          "should_trigger": false
+        }
+      ]
+    },
+    {
+      "id": "existing-repo-with-partial-docs",
+      "category": "workflow",
+      "scenario": "A Vite + Vanilla JS repo that already has AGENTS.md and README.md, but is missing CONTRIBUTING.md, .github/CODEOWNERS, SECURITY.md, and .github/PULL_REQUEST_TEMPLATE.md.",
+      "prompt": "Run wake-up-repo on this repository.",
+      "assertions": [
+        "Inspects package.json, AGENTS.md, README.md, and .github/ before asking questions.",
+        "Infers Vite, build scripts, and existing patterns without asking the owner what stack the repo uses.",
+        "Proposes filling CONTRIBUTING.md, .github/CODEOWNERS, SECURITY.md, and .github/PULL_REQUEST_TEMPLATE.md in the same pass.",
+        "Does not overwrite existing AGENTS.md or README.md silently; presents a diff or merge plan first.",
+        "Verifies all paths and CLI commands referenced in AGENTS.md resolve on disk."
+      ]
+    },
+    {
+      "id": "greenfield-python-service",
+      "category": "workflow",
+      "scenario": "A minimal Python FastAPI repo with pyproject.toml, app/main.py, and app/auth/jwt.py, with no governance files or CI.",
+      "prompt": "Make this new FastAPI repo ready for coding agents.",
+      "assertions": [
+        "Infers Python/FastAPI stack and dependencies from pyproject.toml.",
+        "Flags app/auth/ as a high-blast-radius path candidate for .github/CODEOWNERS.",
+        "Asks only for genuine ambiguities (owner handles, branching/commit rules, external docs, and fast vs full verification commands).",
+        "Generates root AGENTS.md under 150 lines with separated fast edit-time checks and full pre-PR checks.",
+        "Does not duplicate branching or security rules inside AGENTS.md; points to CONTRIBUTING.md and SECURITY.md."
+      ]
+    },
+    {
+      "id": "monorepo-anti-patterns-and-stale-docs",
+      "category": "inference",
+      "scenario": "A monorepo with packages/web (TypeScript, strict: false, scattered @ts-ignore and eslint-disable) and services/billing (Rust), plus a stale README.md referencing deleted npm scripts.",
+      "prompt": "Audit this monorepo and set up the AI-native control plane.",
+      "assertions": [
+        "Surfaces concrete anti-patterns found in code (strict: false, @ts-ignore, eslint-disable) and stale README.md scripts.",
+        "Proposes nested AGENTS.md (packages/web/AGENTS.md and services/billing/AGENTS.md) rather than mixing TS and Rust rules in root AGENTS.md.",
+        "Protects services/billing/ in .github/CODEOWNERS.",
+        "Keeps root AGENTS.md under 150 lines."
+      ]
+    },
+    {
+      "id": "knowledge-source-distillation",
+      "category": "ingestion",
+      "scenario": "Owner provides an incident postmortem explaining a non-obvious retry-queue workaround and a list of banned crypto libraries.",
+      "prompt": "Here is our incident postmortem and security note—wake up the repo with these included.",
+      "assertions": [
+        "Distills the non-obvious retry-queue workaround into a concise ADR under docs/adr/ rather than pasting raw prose into AGENTS.md.",
+        "Places banned crypto libraries into SECURITY.md and adds a short pointer from AGENTS.md.",
+        "Includes a hard boundary in AGENTS.md warning agents not to 'clean up' the retry-queue workaround without reading docs/adr/."
+      ]
+    }
+  ]
+}
